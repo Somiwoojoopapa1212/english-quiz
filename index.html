@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 영어 명대사 퀴즈</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#2563EB">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="영어 퀴즈">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Jua', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+      color: #1E3A5F;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      padding: 28px 24px;
+      box-shadow: 0 8px 30px rgba(37, 99, 235, 0.12);
+    }
+
+    h1 {
+      font-size: 1.7rem;
+      text-align: center;
+      margin-bottom: 6px;
+      color: #2563EB;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #64748B;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      background: #EFF6FF;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 24px;
+      border: 1.5px solid #BFDBFE;
+    }
+
+    .stat { text-align: center; }
+    .stat-num { font-size: 1.4rem; font-weight: bold; color: #2563EB; }
+    .stat-label { font-size: 0.75rem; color: #64748B; margin-top: 2px; }
+
+    .mode-title {
+      font-size: 0.88rem;
+      color: #64748B;
+      margin-bottom: 10px;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      background: #EFF6FF;
+      border: 2px solid #BFDBFE;
+      border-radius: 14px;
+      padding: 14px 10px;
+      color: #1E3A5F;
+      cursor: pointer;
+      font-family: 'Jua', sans-serif;
+      font-size: 0.88rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      border-color: #2563EB;
+      background: #EFF6FF;
+      color: #2563EB;
+    }
+
+    .mode-btn .icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+    .count-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .count-btn {
+      background: #EFF6FF;
+      border: 2px solid #BFDBFE;
+      border-radius: 10px;
+      padding: 10px;
+      color: #1E3A5F;
+      cursor: pointer;
+      font-family: 'Jua', sans-serif;
+      font-size: 0.9rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .count-btn.active {
+      border-color: #2563EB;
+      background: #EFF6FF;
+      color: #2563EB;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #2563EB, #3B82F6);
+      border: none;
+      border-radius: 16px;
+      padding: 16px;
+      color: #fff;
+      font-family: 'Jua', sans-serif;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:active { transform: scale(0.97); box-shadow: none; }
+
+    .btn-secondary {
+      width: 100%;
+      background: #EFF6FF;
+      border: 2px solid #BFDBFE;
+      border-radius: 16px;
+      padding: 14px;
+      color: #64748B;
+      font-family: 'Jua', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: opacity 0.15s;
+    }
+
+    .btn-secondary:active { opacity: 0.7; }
+
+    .progress-wrap { margin-bottom: 20px; }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: #64748B;
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #DBEAFE;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563EB, #60A5FA);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .quit-btn {
+      background: #EFF6FF;
+      border: 1.5px solid #BFDBFE;
+      border-radius: 10px;
+      padding: 6px 12px;
+      color: #64748B;
+      font-family: 'Jua', sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .quit-btn:hover { background: #DBEAFE; border-color: #2563EB; color: #2563EB; }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal h3 { font-size: 1.1rem; margin-bottom: 10px; color: #1E3A5F; }
+    .modal p { font-size: 0.88rem; color: #64748B; margin-bottom: 20px; }
+
+    .modal-btns { display: flex; gap: 10px; }
+    .modal-btns button { flex: 1; padding: 12px; border-radius: 12px; font-family: 'Jua', sans-serif; font-size: 0.95rem; cursor: pointer; border: none; }
+    .modal-continue { background: linear-gradient(135deg, #2563EB, #3B82F6); color: #fff; }
+    .modal-quit { background: #EFF6FF; border: 1.5px solid #BFDBFE !important; color: #64748B; }
+
+    .quiz-type-badge {
+      display: inline-block;
+      background: #EFF6FF;
+      border: 1.5px solid #BFDBFE;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.8rem;
+      color: #2563EB;
+      margin-bottom: 16px;
+    }
+
+    .question-box {
+      background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+      border-radius: 18px;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #BFDBFE;
+    }
+
+    .question-main {
+      font-size: 1.15rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+      line-height: 1.5;
+      color: #1E3A5F;
+      font-family: 'Noto Sans KR', sans-serif;
+      word-break: break-word;
+    }
+
+    .question-main.english {
+      font-style: italic;
+      font-size: 1.05rem;
+    }
+
+    .question-sub {
+      font-size: 0.82rem;
+      color: #64748B;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choice-btn {
+      background: #FFFFFF;
+      border: 2px solid #BFDBFE;
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: #1E3A5F;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.9rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .choice-btn:hover { background: #EFF6FF; border-color: #60A5FA; }
+    .choice-btn:active { transform: scale(0.98); }
+    .choice-btn.correct { border-color: #10B981; background: #F0FFF8; color: #059669; }
+    .choice-btn.wrong { border-color: #EF4444; background: #FFF5F5; color: #DC2626; }
+    .choice-btn.disabled { cursor: default; }
+    .choice-btn.disabled:active { transform: none; }
+
+    .feedback {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      display: none;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .feedback.correct { background: #F0FFF8; border: 1.5px solid #10B981; color: #059669; }
+    .feedback.wrong { background: #FFF5F0; border: 1.5px solid #FCA5A5; color: #1E3A5F; }
+    .feedback.wrong .answer { color: #059669; font-weight: bold; }
+
+    .next-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #2563EB, #3B82F6);
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      color: #fff;
+      font-family: 'Jua', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 14px;
+      display: none;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+
+    .score-circle {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: conic-gradient(#2563EB 0deg, #2563EB var(--deg), #DBEAFE var(--deg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .score-inner {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-num { font-size: 1.8rem; font-weight: bold; color: #2563EB; }
+    .score-total { font-size: 0.8rem; color: #64748B; }
+
+    .result-message {
+      text-align: center;
+      font-size: 1.05rem;
+      margin-bottom: 20px;
+      color: #1E3A5F;
+    }
+
+    .result-stats {
+      display: flex;
+      justify-content: space-around;
+      background: #EFF6FF;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 20px;
+      border: 1.5px solid #BFDBFE;
+    }
+
+    .wrong-list { margin-bottom: 20px; }
+
+    .wrong-title {
+      font-size: 0.85rem;
+      color: #64748B;
+      margin-bottom: 10px;
+    }
+
+    .wrong-item {
+      background: #EFF6FF;
+      border: 1.5px solid #BFDBFE;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .wrong-item .expr { font-size: 0.9rem; font-weight: bold; color: #2563EB; font-style: italic; word-break: break-word; }
+    .wrong-item .mean { color: #64748B; margin-top: 4px; }
+    .wrong-item .src { color: #94A3B8; font-size: 0.78rem; margin-top: 2px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 홈 화면 -->
+  <div id="screen-home" class="card">
+    <h1>🎬 영어 명대사 퀴즈</h1>
+    <p class="subtitle">영화·애니메이션 명대사로 배우는 영어</p>
+
+    <div class="stats" id="home-stats">
+      <div class="stat">
+        <div class="stat-num" id="stat-total">-</div>
+        <div class="stat-label">전체 표현</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-solved">0</div>
+        <div class="stat-label">푼 문제</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-best">-</div>
+        <div class="stat-label">최고 점수</div>
+      </div>
+    </div>
+
+    <p class="mode-title">퀴즈 유형</p>
+    <div class="mode-grid">
+      <button class="mode-btn active" data-mode="quote-to-meaning" onclick="selectMode(this)">
+        <span class="icon">🎬</span>대사 → 뜻
+      </button>
+      <button class="mode-btn" data-mode="meaning-to-quote" onclick="selectMode(this)">
+        <span class="icon">💬</span>뜻 → 대사
+      </button>
+      <button class="mode-btn" data-mode="source" onclick="selectMode(this)">
+        <span class="icon">🎭</span>출처 맞히기
+      </button>
+      <button class="mode-btn" data-mode="random" onclick="selectMode(this)">
+        <span class="icon">🎲</span>랜덤 혼합
+      </button>
+    </div>
+
+    <p class="mode-title">문제 수</p>
+    <div class="count-grid">
+      <button class="count-btn active" data-count="10" onclick="selectCount(this)">10문제</button>
+      <button class="count-btn" data-count="20" onclick="selectCount(this)">20문제</button>
+      <button class="count-btn" data-count="0" onclick="selectCount(this)">전체</button>
+    </div>
+
+    <button class="btn-primary" onclick="startQuiz()">퀴즈 시작 🚀</button>
+  </div>
+
+  <!-- 중단 확인 모달 -->
+  <div class="modal-overlay hidden" id="quit-modal">
+    <div class="modal">
+      <h3>퀴즈를 그만할까요?</h3>
+      <p>지금까지의 결과는 저장되지 않아요</p>
+      <div class="modal-btns">
+        <button class="modal-quit" onclick="confirmQuit()">그만하기</button>
+        <button class="modal-continue" onclick="closeModal()">계속하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 퀴즈 화면 -->
+  <div id="screen-quiz" class="card hidden">
+    <div class="quiz-header">
+      <button class="quit-btn" onclick="openModal()">✕ 그만하기</button>
+      <span id="quiz-score-live" style="font-size:0.85rem; color:#64748B">✅ 0 &nbsp; ❌ 0</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="quiz-progress">1 / 10</span>
+        <span></span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="quiz-type-badge" id="quiz-type-badge">대사 → 뜻</div>
+
+    <div class="question-box">
+      <div class="question-main" id="question-main"></div>
+      <div class="question-sub" id="question-sub"></div>
+    </div>
+
+    <div class="choices" id="choices"></div>
+
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">다음 문제 →</button>
+  </div>
+
+  <!-- 결과 화면 -->
+  <div id="screen-result" class="card hidden">
+    <h1 style="margin-bottom:20px">📊 결과</h1>
+
+    <div class="score-circle" id="score-circle">
+      <div class="score-inner">
+        <div class="score-num" id="result-score">0</div>
+        <div class="score-total" id="result-total">/ 10</div>
+      </div>
+    </div>
+
+    <div class="result-message" id="result-message"></div>
+
+    <div class="result-stats">
+      <div class="stat">
+        <div class="stat-num" id="result-correct">0</div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="result-wrong-count">0</div>
+        <div class="stat-label">오답</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="result-rate">0%</div>
+        <div class="stat-label">정답률</div>
+      </div>
+    </div>
+
+    <div class="wrong-list" id="wrong-list"></div>
+
+    <button class="btn-primary" onclick="startQuiz()">다시 도전 🔄</button>
+    <button class="btn-secondary" onclick="showHome()">홈으로 🏠</button>
+  </div>
+
+</div>
+
+<script>
+  let sentences = [];
+  let quizItems = [];
+  let currentIdx = 0;
+  let correct = 0;
+  let wrong = 0;
+  let wrongItems = [];
+  let answered = false;
+  let selectedMode = 'quote-to-meaning';
+  let selectedCount = 10;
+
+  fetch('sentences.json')
+    .then(r => r.json())
+    .then(data => {
+      sentences = data;
+      document.getElementById('stat-total').textContent = sentences.length;
+      const saved = JSON.parse(localStorage.getItem('english_quiz_stats') || '{}');
+      document.getElementById('stat-solved').textContent = saved.solved || 0;
+      document.getElementById('stat-best').textContent = saved.best ? saved.best + '점' : '-';
+    });
+
+  function selectMode(btn) {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedMode = btn.dataset.mode;
+  }
+
+  function selectCount(btn) {
+    document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedCount = parseInt(btn.dataset.count);
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function getMode() {
+    if (selectedMode === 'random') {
+      const modes = ['quote-to-meaning', 'meaning-to-quote', 'source'];
+      return modes[Math.floor(Math.random() * modes.length)];
+    }
+    return selectedMode;
+  }
+
+  function truncate(str, len) {
+    return str.length > len ? str.slice(0, len) + '…' : str;
+  }
+
+  function buildQuestion(sentence, mode) {
+    const distractors = shuffle(sentences.filter(s => s !== sentence)).slice(0, 3);
+    const allChoices = shuffle([sentence, ...distractors]);
+
+    if (mode === 'quote-to-meaning') {
+      return {
+        badge: '🎬 대사 → 뜻',
+        main: '"' + sentence.expression + '"',
+        mainClass: 'english',
+        sub: '— ' + sentence.source,
+        correct: sentence.korean_translation,
+        choices: allChoices.map(s => s.korean_translation),
+        feedbackCorrect: `✅ 정답! &nbsp;<strong>${truncate(sentence.expression, 40)}</strong><br><small>${sentence.korean_translation}</small>`,
+        feedbackWrong: `❌ 오답 &nbsp; 정답: <span class="answer">${sentence.korean_translation}</span><br><small>${truncate(sentence.expression, 50)}</small>`,
+      };
+    } else if (mode === 'meaning-to-quote') {
+      return {
+        badge: '💬 뜻 → 대사',
+        main: sentence.korean_translation,
+        mainClass: '',
+        sub: '— ' + sentence.source,
+        correct: sentence.expression,
+        choices: allChoices.map(s => truncate(s.expression, 60)),
+        feedbackCorrect: `✅ 정답! &nbsp;<em>"${truncate(sentence.expression, 50)}"</em>`,
+        feedbackWrong: `❌ 오답 &nbsp; 정답: <span class="answer">"${truncate(sentence.expression, 50)}"</span>`,
+      };
+    } else {
+      return {
+        badge: '🎭 출처 맞히기',
+        main: '"' + sentence.expression + '"',
+        mainClass: 'english',
+        sub: '어느 작품의 대사일까요?',
+        correct: sentence.source,
+        choices: allChoices.map(s => s.source),
+        feedbackCorrect: `✅ 정답! &nbsp;<strong>${sentence.source}</strong>`,
+        feedbackWrong: `❌ 오답 &nbsp; 정답: <span class="answer">${sentence.source}</span>`,
+      };
+    }
+  }
+
+  function startQuiz() {
+    if (sentences.length === 0) return;
+    const pool = shuffle([...sentences]);
+    const count = selectedCount === 0 ? pool.length : Math.min(selectedCount, pool.length);
+    quizItems = pool.slice(0, count).map(s => ({ sentence: s, mode: getMode() }));
+    currentIdx = 0; correct = 0; wrong = 0; wrongItems = [];
+    showScreen('quiz');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    answered = false;
+    const { sentence, mode } = quizItems[currentIdx];
+    const q = buildQuestion(sentence, mode);
+    const total = quizItems.length;
+
+    document.getElementById('quiz-progress').textContent = `${currentIdx + 1} / ${total}`;
+    document.getElementById('quiz-score-live').textContent = `✅ ${correct}  ❌ ${wrong}`;
+    document.getElementById('progress-fill').style.width = `${(currentIdx / total) * 100}%`;
+    document.getElementById('quiz-type-badge').textContent = q.badge;
+
+    const mainEl = document.getElementById('question-main');
+    mainEl.textContent = q.main;
+    mainEl.className = 'question-main' + (q.mainClass ? ' ' + q.mainClass : '');
+    document.getElementById('question-sub').textContent = q.sub;
+
+    const choicesEl = document.getElementById('choices');
+    choicesEl.innerHTML = '';
+    q.choices.forEach(choice => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = choice;
+      btn.onclick = () => answer(btn, choice, q.correct, q, sentence);
+      choicesEl.appendChild(btn);
+    });
+
+    document.getElementById('feedback').style.display = 'none';
+    document.getElementById('next-btn').style.display = 'none';
+  }
+
+  function answer(btn, chosen, correctAnswer, q, sentence) {
+    if (answered) return;
+    answered = true;
+
+    const allBtns = document.querySelectorAll('.choice-btn');
+    allBtns.forEach(b => b.classList.add('disabled'));
+
+    const feedback = document.getElementById('feedback');
+    const isCorrect = chosen === correctAnswer ||
+      (q.badge.includes('뜻 → 대사') && chosen === truncate(sentence.expression, 60));
+
+    if (isCorrect) {
+      btn.classList.add('correct');
+      correct++;
+      feedback.className = 'feedback correct';
+      feedback.innerHTML = q.feedbackCorrect;
+    } else {
+      btn.classList.add('wrong');
+      wrong++;
+      wrongItems.push(sentence);
+      allBtns.forEach(b => {
+        if (b.textContent === correctAnswer) b.classList.add('correct');
+      });
+      feedback.className = 'feedback wrong';
+      feedback.innerHTML = q.feedbackWrong;
+    }
+
+    feedback.style.display = 'block';
+    document.getElementById('next-btn').style.display = 'block';
+    document.getElementById('next-btn').textContent =
+      currentIdx + 1 < quizItems.length ? '다음 문제 →' : '결과 보기 📊';
+  }
+
+  function nextQuestion() {
+    currentIdx++;
+    if (currentIdx < quizItems.length) renderQuestion();
+    else showResult();
+  }
+
+  function showResult() {
+    const total = quizItems.length;
+    const rate = Math.round((correct / total) * 100);
+    const deg = (correct / total) * 360;
+
+    document.getElementById('score-circle').style.setProperty('--deg', deg + 'deg');
+    document.getElementById('result-score').textContent = correct;
+    document.getElementById('result-total').textContent = '/ ' + total;
+    document.getElementById('result-correct').textContent = correct;
+    document.getElementById('result-wrong-count').textContent = wrong;
+    document.getElementById('result-rate').textContent = rate + '%';
+
+    const messages = [
+      [90, '🏆 완벽해요! 영화 박사 인정!'],
+      [70, '🎉 훌륭해요! 조금만 더 하면 완벽!'],
+      [50, '👍 절반 이상 맞혔어요! 계속 도전!'],
+      [0,  '💪 아직 괜찮아요! 다시 도전해봐요!'],
+    ];
+    document.getElementById('result-message').textContent =
+      messages.find(([t]) => rate >= t)[1];
+
+    const wrongList = document.getElementById('wrong-list');
+    wrongList.innerHTML = wrongItems.length > 0
+      ? `<div class="wrong-title">❌ 틀린 문제 (${wrongItems.length}개)</div>` +
+        wrongItems.map(s => `
+          <div class="wrong-item">
+            <div class="expr">"${truncate(s.expression, 60)}"</div>
+            <div class="mean">${s.korean_translation}</div>
+            <div class="src">${s.source}</div>
+          </div>`).join('')
+      : '';
+
+    const saved = JSON.parse(localStorage.getItem('english_quiz_stats') || '{}');
+    saved.solved = (saved.solved || 0) + total;
+    if (!saved.best || rate > saved.best) saved.best = rate;
+    localStorage.setItem('english_quiz_stats', JSON.stringify(saved));
+
+    showScreen('result');
+  }
+
+  function showHome() {
+    const saved = JSON.parse(localStorage.getItem('english_quiz_stats') || '{}');
+    document.getElementById('stat-solved').textContent = saved.solved || 0;
+    document.getElementById('stat-best').textContent = saved.best ? saved.best + '점' : '-';
+    showScreen('home');
+  }
+
+  function showScreen(name) {
+    ['home', 'quiz', 'result'].forEach(s => {
+      document.getElementById('screen-' + s).classList.toggle('hidden', s !== name);
+    });
+  }
+
+  function openModal() {
+    document.getElementById('quit-modal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('quit-modal').classList.add('hidden');
+  }
+
+  function confirmQuit() {
+    closeModal();
+    showHome();
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            newSW.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+    });
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+  }
+</script>
+</body>
+</html>

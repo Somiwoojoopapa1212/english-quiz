@@ -1,0 +1,36 @@
+// v:2026-04-28T00:00:00
+const CACHE = 'english-quiz-v:2026-04-28T00:00:00';
+const ASSETS = [
+  '/english-quiz/',
+  '/english-quiz/index.html',
+  '/english-quiz/manifest.json',
+  '/english-quiz/sentences.json',
+  '/english-quiz/icons/icon-192.png',
+  '/english-quiz/icons/icon-512.png',
+];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => c.addAll(ASSETS))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('message', e => {
+  if (e.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(cached => cached || fetch(e.request))
+  );
+});
