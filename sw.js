@@ -1,5 +1,5 @@
-// v:2026-04-28T00:00:00
-const CACHE = 'english-quiz-v:2026-04-28T00:00:00';
+// v:2026-04-28T02:02:17
+const CACHE = 'english-quiz-v:2026-04-28T02:02:17';
 const ASSETS = [
   '/english-quiz/',
   '/english-quiz/index.html',
